@@ -8,6 +8,14 @@ services:
       - "8000:8000"
     networks:
       - backend-network
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - backend-network
 
 networks:
   backend-network:
