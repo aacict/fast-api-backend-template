@@ -33,10 +33,35 @@ services:
       - backend-network
     volumes:
       - grafana-data:/var/lib/grafana  # persistence
-
+  loki:
+    image: grafana/loki:2.9.1
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki-config.yaml:/etc/loki/config.yaml:ro
+      - loki-config:/etc/loki       
+      - loki-data:/var/loki             
+    command: -config.file=/etc/loki/config.yaml
+    networks:
+      - backend-network
+  promtail:
+    image: grafana/promtail:2.9.1
+    container_name: promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./monitoring/promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      - loki
+    networks:
+      - backend-network
+      
 volumes:
   prometheus-data:
   grafana-data:
+  loki-data:
+  loki-config:
 
 networks:
   backend-network:
